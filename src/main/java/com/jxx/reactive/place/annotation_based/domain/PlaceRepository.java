@@ -5,9 +5,11 @@ import java.util.List;
 public interface PlaceRepository {
     Place save(Place place);
 
-    public List<Place> findAll();
+    List<Place> findAll();
 
-    public Place findBy(Long id);
+    Place findBy(Long id);
+
+    Place update(Long id, String name);
 
     void deleteAll();
 }

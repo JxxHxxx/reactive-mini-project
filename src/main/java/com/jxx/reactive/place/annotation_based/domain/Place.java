@@ -17,4 +17,8 @@ public class Place {
         this.address = address;
     }
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
 }
