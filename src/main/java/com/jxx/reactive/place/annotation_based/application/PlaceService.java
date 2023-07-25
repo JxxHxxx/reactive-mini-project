@@ -9,10 +9,10 @@ import com.jxx.reactive.place.annotation_based.dto.PlaceUpdateForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,8 +38,12 @@ public class PlaceService {
     }
 
     public Mono<PlaceResponse> findPlace(Long placeId) {
-        Place place = placeRepository.findBy(placeId);
 
+        Place place = placeRepository.findBy(placeId);
+        if (place == null) {
+            return Mono
+                    .error(() -> new ServerWebInputException("존재하지 않은 장소입니다"));
+        }
         return Mono
                 .just(new PlaceResponse(place.getId(), place.getName(), place.getAddress()))
                 .switchIfEmpty(Mono.empty());
