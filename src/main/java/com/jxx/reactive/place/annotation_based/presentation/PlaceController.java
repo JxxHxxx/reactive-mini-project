@@ -23,7 +23,7 @@ public class PlaceController {
         Mono<PlaceResponse> responseMono = placeService.enrollPlace(placeForm);
 
         Mono<PlaceResponseBody> body = responseMono
-                .map(response -> new PlaceResponseBody(200, "장소 등록 완료", response));
+                .map(response -> new PlaceResponseBody(201, "장소 등록 완료", response));
 
         return ResponseEntity.ok(body);
     }

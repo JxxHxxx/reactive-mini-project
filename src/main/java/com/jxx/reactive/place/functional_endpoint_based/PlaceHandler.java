@@ -24,21 +24,16 @@ public class PlaceHandler {
         return request.bodyToMono(PlaceForm.class)
                 .doOnNext(form -> validator.verify(form))
                 .doOnNext(form -> placeService.enrollPlace(form))
-                .map(form -> new PlaceResponseBody<PlaceResponse>(200, "테스트", new PlaceResponse(
-                        form.id(), form.name(), Address.of(
-                        form.city(),
-                        form.district(),
-                        form.neighborhood(),
-                        form.streetNumber(),
-                        form.roomNumber()
-                ))))
-                .flatMap(body -> ServerResponse // 이하 응답을 만드는 과정
+                .map(form -> new PlaceResponseBody<PlaceResponse>(201, "장소 등록 완료", new PlaceResponse(
+                        form.id(), form.name(), Address.of(form.city(), form.district(), form.neighborhood(), form.streetNumber(), form.roomNumber())
+                )))
+                .flatMap(body -> ServerResponse
                         .created(URI.create("/v2/places/" + body.response().placeId()))
                         .body(Mono.just(body), PlaceResponse.class))
 
                 .onErrorResume(IllegalArgumentException.class,
                         ex -> ServerResponse.badRequest()
-                                    .bodyValue(ErrorResponse.badRequest(ex.getMessage())));
+                                .bodyValue(ErrorResponse.badRequest(ex.getMessage())));
     }
 
     public Mono<ServerResponse> findPlace(ServerRequest request) {
@@ -49,8 +44,8 @@ public class PlaceHandler {
                 .flatMap(body -> ServerResponse.ok()
                         .body(Mono.just(body), PlaceResponseBody.class))
 
-                .onErrorResume(ServerWebInputException.class, ex ->
-                        ServerResponse.badRequest()
+                .onErrorResume(ServerWebInputException.class,
+                        ex -> ServerResponse.badRequest()
                                 .bodyValue(new ErrorResponse(400, List.of(ex.getReason()))
                                 ));
     }
