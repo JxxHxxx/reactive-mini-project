@@ -24,7 +24,7 @@ public class PlaceHandler {
         return request.bodyToMono(PlaceForm.class)
                 .doOnNext(form -> validator.verify(form))
                 .doOnNext(form -> placeService.enrollPlace(form))
-                .map(form -> new PlaceResponseBody<PlaceResponse>(201, "장소 등록 완료", new PlaceResponse(
+                .map(form -> new ResponseBody<PlaceResponse>(201, "장소 등록 완료", new PlaceResponse(
                         form.id(), form.name(), Address.of(form.city(), form.district(), form.neighborhood(), form.streetNumber(), form.roomNumber())
                 )))
                 .flatMap(body -> ServerResponse
@@ -40,9 +40,9 @@ public class PlaceHandler {
         Long placeId = Long.valueOf(request.pathVariable("place-id"));
 
         return placeService.findPlace(placeId)
-                .map(response -> new PlaceResponseBody<>(200, "장소 조회 완료", response))
+                .map(response -> new ResponseBody<>(200, "장소 조회 완료", response))
                 .flatMap(body -> ServerResponse.ok()
-                        .body(Mono.just(body), PlaceResponseBody.class))
+                        .body(Mono.just(body), ResponseBody.class))
 
                 .onErrorResume(ServerWebInputException.class,
                         ex -> ServerResponse.badRequest()
@@ -64,7 +64,7 @@ public class PlaceHandler {
         return request.bodyToMono(PlaceUpdateForm.class)
                 .map(form -> placeService.updatePlace(form))
                 .flatMap(body -> ServerResponse.ok()
-                        .body(Mono.just(new PlaceResponseBody(200, "장소 수정 완료", body)), PlaceResponseBody.class));
+                        .body(Mono.just(new ResponseBody(200, "장소 수정 완료", body)), ResponseBody.class));
     }
 }
 

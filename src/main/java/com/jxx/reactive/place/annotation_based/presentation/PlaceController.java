@@ -4,14 +4,16 @@ import com.jxx.reactive.place.annotation_based.application.PlaceService;
 import com.jxx.reactive.place.annotation_based.dto.PlaceForm;
 import com.jxx.reactive.place.annotation_based.dto.PlaceListResponseBody;
 import com.jxx.reactive.place.annotation_based.dto.PlaceResponse;
-import com.jxx.reactive.place.annotation_based.dto.PlaceResponseBody;
+import com.jxx.reactive.place.annotation_based.dto.ResponseBody;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class PlaceController {
@@ -19,21 +21,21 @@ public class PlaceController {
     private final PlaceService placeService;
 
     @PostMapping("/places")
-    public ResponseEntity<Mono<PlaceResponseBody>> createPlace(@RequestBody PlaceForm placeForm) {
+    public ResponseEntity<Mono<ResponseBody>> createPlace(@RequestBody PlaceForm placeForm) {
         Mono<PlaceResponse> responseMono = placeService.enrollPlace(placeForm);
 
-        Mono<PlaceResponseBody> body = responseMono
-                .map(response -> new PlaceResponseBody(201, "장소 등록 완료", response));
+        Mono<ResponseBody> body = responseMono
+                .map(response -> new ResponseBody(201, "장소 등록 완료", response));
 
         return ResponseEntity.ok(body);
     }
 
     @GetMapping("/places/{place-id}")
-    public ResponseEntity<Mono<PlaceResponseBody>> findPlace(@PathVariable("place-id") Long placeId) {
+    public ResponseEntity<Mono<ResponseBody>> findPlace(@PathVariable("place-id") Long placeId) {
         Mono<PlaceResponse> placeResponse = placeService.findPlace(placeId);
 
-        Mono<PlaceResponseBody> body = placeResponse
-                .map(response -> new PlaceResponseBody(200, "장소 조회 완료", response));
+        Mono<ResponseBody> body = placeResponse
+                .map(response -> new ResponseBody(200, "장소 조회 완료", response));
 
         return ResponseEntity.ok(body);
     }
